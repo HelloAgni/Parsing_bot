@@ -30,7 +30,3 @@ def str_is_url(url: str):
         return True
     else:
         return False
-
-# xpath1 = '//*[@id="react-root"]/section'
-# xpath2 = '//*[@id="react-root"]/section[0]'
-# print(str_is_xpath(xpath2))

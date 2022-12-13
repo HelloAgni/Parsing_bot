@@ -12,14 +12,15 @@ def check_extensions(file_name):
     ext = file_name.split('.')[-1]
     print('Ext', ext)
     # 'xlsx'
-    if ext not in EXTENSIONS:
-        return False
-    return True
+    if ext in EXTENSIONS:
+        return True
+    return False
 
 
-def temp_file_path(doc):
+def check_file(doc):
     """
-    Получаем имя файла и указываем путь для скачивания
+    Проверка расширения файла.
+    Получение имя файла и указываем путь для скачивания.
     """
     file_name = doc['file_path'].split('/')[-1]
     print('F1', file_name)
