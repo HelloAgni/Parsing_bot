@@ -10,6 +10,7 @@ service = Service(executable_path=ChromeDriverManager().install())
 option = webdriver.ChromeOptions()
 option.add_argument('headless')
 option.add_argument('--window-size=1920,1080')
+option.add_argument("--disable-3d-apis")  # Fix for Windows
 # option.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36')
 option.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36') # for save
 driver = webdriver.Chrome(service=service, options=option)

@@ -30,7 +30,7 @@ def check_table_and_insert_data(file_path):
             try:
                 con = sqlite3.connect('db.sqlite')
                 table = d.to_string(
-                    index=False, max_colwidth=15, justify='center')
+                    index=False, max_colwidth=30, justify='center')
                 d.to_sql(
                     name='krakoz', con=con, if_exists='append', index=False)
                 con.close()
