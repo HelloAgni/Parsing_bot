@@ -32,7 +32,7 @@ TOKEN=9999999:aaa................
 
 # После установки зависимостей и создания бота + файла .env
 cd bot/
-# Создаем db для получения "красивой табицы" - этот шаг необязательный
+# Создаем db для получения "красивой таблицы" - этот шаг необязательный
 python db_sql.py
 
 # Запускаем Бота
@@ -49,4 +49,4 @@ python bot.py
 ```
 Образец Exel файла доступен по ссылке:  
 
-https://github.com/HelloAgni/Parsing_bot/xpath.xlsx
+https://github.com/HelloAgni/Parsing_bot/blob/main/xpath.xlsx
