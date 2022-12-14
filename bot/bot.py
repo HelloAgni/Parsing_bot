@@ -1,18 +1,17 @@
 import os
 import signal
-import sqlite3
-from table_check import check_table
-from file_check import check_file
-import pandas as pd
-from dotenv import load_dotenv
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+
 import msg
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from dotenv import load_dotenv
+from file_check import check_file
+from parsing import open_file_and_parsing
+from table_check import check_table_and_insert_data
+from telegram import ReplyKeyboardRemove
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
 load_dotenv()
 
 TOKEN = os.getenv('TOKEN')
-# USER_ID = os.getenv('USER_ID')
 TEMP_DIR = '/tempfiles/'
 
 updater = Updater(token=TOKEN)
@@ -29,36 +28,26 @@ def my_file(update, context):
     file_path = check_file(doc=doc)
     if file_path:
         doc.download(custom_path=file_path)
-        report = check_table(file_path=file_path)
+        report = check_table_and_insert_data(file_path=file_path)
         if isinstance(report, str):
             context.bot.send_message(
                 chat_id=chat.id,
                 text=report
             )
-        elif isinstance(report, dict):
+        elif isinstance(report, dict):  # timeout limit?
             context.bot.send_message(
-            chat_id=chat.id,
-            text=msg.msg_upload(report['table'])
+                chat_id=chat.id,
+                text=msg.msg_upload(report['table'])
             )
-            
-            # try:
-            #     con = sqlite3.connect('db.sqlite')
-            #     rows = ['name', 'url', 'xpath']
-            #     d = pd.read_excel(file_path, header=None, names=rows)
-            #     table = d.to_string(
-            #         index=False, max_colwidth=15, justify='center')
-            #     d.to_sql(
-            #         name='krakoz', con=con, if_exists='append', index=False)
-            #     con.close()
-            #     context.bot.send_message(
-            #         chat_id=chat.id,
-            #         text=msg.msg_upload(data=table)
-            #     )
-            # except Exception as e:
-            #     context.bot.send_message(
-            #         chat_id=chat.id,
-            #         text=msg.msg_file_error(er=e)
-            #     )
+            try:
+                result, pars_time = open_file_and_parsing(file=file_path)
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text=f'{result}{msg.msg_time_pars()}{pars_time}c.')
+            except Exception as er:
+                context.bot.send_message(
+                    chat_id=chat.id,
+                    text=f'{msg.msg_tolong_pars()} {er}')
     else:
         context.bot.send_message(
             chat_id=chat.id,
@@ -72,11 +61,9 @@ def wake_up(update, context):
     """
     chat = update.effective_chat
     name = update.message.chat.first_name
-    # button = ReplyKeyboardMarkup([['Line_2']], resize_keyboard=True)
     context.bot.send_message(
         chat_id=chat.id,
         text=msg.msg_hi(name=name))
-    # reply_markup=button)
 
 
 def bot_break(update, context):
