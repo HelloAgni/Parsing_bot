@@ -20,7 +20,7 @@ def check_extensions(file_name):
 def check_file(doc):
     """
     Проверка расширения файла.
-    Получение имя файла и указываем путь для скачивания.
+    Получение имени файла и указываем путь для скачивания.
     """
     file_name = doc['file_path'].split('/')[-1]
     print('F1', file_name)
@@ -29,7 +29,7 @@ def check_file(doc):
     if check_extensions(file_name):
         current_dir = pathlib.Path(__file__).parent
         print('F2', str(current_dir))
-        # F2 /home/kirlx/Dev_lx/Simple_bot1/tz_bot
+        # F2
         file_path = str(current_dir) + TEMP_DIR + file_name
         return file_path
     return False

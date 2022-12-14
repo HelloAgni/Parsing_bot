@@ -18,50 +18,57 @@ TEMP_DIR = '/tempfiles/'
 updater = Updater(token=TOKEN)
 
 
-def my_file(update, context):    
+def my_file(update, context):
+    """
+    Проверка расширения файла.
+    Получение имени и указание пути для загрузки.
+    Провека состояние таблицы и валидация.
+    """
     chat = update.effective_chat
     doc = context.bot.get_file(update.message.document)
     file_path = check_file(doc=doc)
     if file_path:
-        """
-        Проверяем состояние таблицы
-        """
         doc.download(custom_path=file_path)
         report = check_table(file_path=file_path)
-        if report:
+        if isinstance(report, str):
             context.bot.send_message(
                 chat_id=chat.id,
                 text=report
             )
-        else:
-            try:
-                con = sqlite3.connect('db.sqlite')
-                rows = ['name', 'url', 'xpath']
-                d = pd.read_excel(file_path, header=None, names=rows)
-                table = d.to_string(
-                    index=False, max_colwidth=15, justify='center')
-                d.to_sql(
-                    name='krakoz', con=con, if_exists='append', index=False)
-                con.close()
-                context.bot.send_message(
-                    chat_id=chat.id,
-                    text=msg.msg_upload(data=table)
-                )
-            except Exception as e:
-                context.bot.send_message(
-                    chat_id=chat.id,
-                    text=msg.msg_file_error(er=e)
-                )
+        elif isinstance(report, dict):
+            context.bot.send_message(
+            chat_id=chat.id,
+            text=msg.msg_upload(report['table'])
+            )
+            
+            # try:
+            #     con = sqlite3.connect('db.sqlite')
+            #     rows = ['name', 'url', 'xpath']
+            #     d = pd.read_excel(file_path, header=None, names=rows)
+            #     table = d.to_string(
+            #         index=False, max_colwidth=15, justify='center')
+            #     d.to_sql(
+            #         name='krakoz', con=con, if_exists='append', index=False)
+            #     con.close()
+            #     context.bot.send_message(
+            #         chat_id=chat.id,
+            #         text=msg.msg_upload(data=table)
+            #     )
+            # except Exception as e:
+            #     context.bot.send_message(
+            #         chat_id=chat.id,
+            #         text=msg.msg_file_error(er=e)
+            #     )
     else:
         context.bot.send_message(
             chat_id=chat.id,
-            text='Файл не прошел проверку!'
+            text=msg.msg_file_check_error()
             )
 
 
 def wake_up(update, context):
     """
-    Активация Бота и приветствие команда /start
+    Активация Бота и приветствие команда /start.
     """
     chat = update.effective_chat
     name = update.message.chat.first_name
@@ -74,7 +81,7 @@ def wake_up(update, context):
 
 def bot_break(update, context):
     """
-    Остановка бота из чата комманда /stop
+    Остановка бота из чата комманда /stop.
     """
     remove_button = ReplyKeyboardRemove()
     chat = update.effective_chat
